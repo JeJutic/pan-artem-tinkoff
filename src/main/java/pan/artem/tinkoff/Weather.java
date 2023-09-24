@@ -1,11 +1,15 @@
 package pan.artem.tinkoff;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
 public class Weather {
+    @Getter
     private final UUID id;
     private final String region;
+    @Getter
     private final int temperature;
     private final Instant dateTime;
 
@@ -18,14 +22,6 @@ public class Weather {
 
     public Weather(String region, int temperature) {
         this(UUID.randomUUID(), region, temperature, Instant.now());
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public int getTemperature() {
-        return temperature;
     }
 
     @Override
