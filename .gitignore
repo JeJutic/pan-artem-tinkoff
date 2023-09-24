@@ -1,3 +1,8 @@
-*
-!/README.MD
-!/.gitignore
+.idea
+
+.gradle
+.gitattributes
+gradle
+gradlew
+gradlew.bat
+build
