@@ -5,7 +5,6 @@ plugins {
     id("io.freefair.lombok") version "8.3"
     id("org.springframework.boot") version "3.1.4"
     id("io.spring.dependency-management") version "1.1.3"
-//    id("io.swagger.core.v3.swagger-gradle-plugin") version "2.2.16"
 }
 
 group = "pan.artem.tinkoff"

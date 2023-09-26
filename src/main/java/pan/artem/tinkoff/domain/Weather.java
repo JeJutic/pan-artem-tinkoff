@@ -13,12 +13,4 @@ public class Weather {
     String region;
     int temperature;
     Instant dateTime;
-
-    public Weather(String region, int temperature, Instant dateTime) {
-        this(UUID.randomUUID(), region, temperature, dateTime);
-    }
-
-    public Weather(String region, int temperature) {
-        this(region, temperature, Instant.now());
-    }
 }

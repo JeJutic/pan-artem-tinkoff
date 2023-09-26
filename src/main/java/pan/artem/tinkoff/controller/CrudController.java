@@ -54,7 +54,7 @@ public class CrudController {
             @PathVariable("city") String city,
             @RequestBody WeatherDto weatherDto
     ) {
-        data.add(new Weather(city, weatherDto.temperature(), weatherDto.dateTime()));
+        data.add(new Weather(weatherDto.id(), city, weatherDto.temperature(), weatherDto.dateTime()));
         return ResponseEntity.ok().build();
     }
 
@@ -77,14 +77,14 @@ public class CrudController {
             @RequestBody WeatherDto weatherDto
     ) {
         for (var weather : data) {
-            if (weather.getRegion().equals(city) &&
+            if (weather.getId().equals(weatherDto.id()) &&
                     weather.getDateTime().equals(weatherDto.dateTime())) {
                 weather.setTemperature(weatherDto.temperature());
                 return ResponseEntity.ok().build();
             }
         }
 
-        data.add(new Weather(city, weatherDto.temperature(), weatherDto.dateTime()));
+        data.add(new Weather(weatherDto.id(), city, weatherDto.temperature(), weatherDto.dateTime()));
         return ResponseEntity
                 .status(201)
                 .build();
