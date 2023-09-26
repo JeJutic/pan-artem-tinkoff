@@ -1,11 +1,13 @@
 .idea
 
 .gradle
-.gitattributes
-gradle
-gradlew
-gradlew.bat
-build
+**/build/
+!src/**/build/
+
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
 
 *.log
 
