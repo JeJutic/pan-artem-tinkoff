@@ -20,6 +20,7 @@ java {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.15")
 

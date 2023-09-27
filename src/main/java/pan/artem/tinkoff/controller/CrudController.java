@@ -1,6 +1,7 @@
 package pan.artem.tinkoff.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CrudController {
 
     ConcurrentLinkedQueue<Weather> data = new ConcurrentLinkedQueue<>();
+
+    boolean isSameDate(LocalDate today, Instant other) {
+        return ZonedDateTime
+                .ofInstant(other, ZoneOffset.UTC)
+                .toLocalDate()
+                .equals(today);
+    }
 
     @Operation(
             summary = "Retrieves JSON representation of weather record for specified city",
@@ -36,23 +44,17 @@ public class CrudController {
     ) {
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         var optionalWeather = data.stream()
-                .filter(weather ->
-                {
-                    LocalDate theDay = ZonedDateTime
-                            .ofInstant(weather.getDateTime(), ZoneOffset.UTC)
-                            .toLocalDate();
-                    return Objects.equals(weather.getRegion(), city) && today.equals(theDay);
-                })
+                .filter(weather -> weather.getRegion().equals(city)
+                        && isSameDate(today, weather.getDateTime()))
                 .findAny();
-        return ResponseEntity
-                .of(optionalWeather);
+        return ResponseEntity.of(optionalWeather);
     }
 
     @Operation(summary = "Creates a new weather record for specified city")
     @PostMapping
     private ResponseEntity<?> postWeather(
             @PathVariable("city") String city,
-            @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherDto weatherDto
     ) {
         data.add(new Weather(weatherDto.id(), city, weatherDto.temperature(), weatherDto.dateTime()));
         return ResponseEntity.ok().build();
@@ -74,7 +76,7 @@ public class CrudController {
     @PutMapping
     private ResponseEntity<?> putWeather(
             @PathVariable("city") String city,
-            @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherDto weatherDto
     ) {
         for (var weather : data) {
             if (weather.getId().equals(weatherDto.id()) &&
