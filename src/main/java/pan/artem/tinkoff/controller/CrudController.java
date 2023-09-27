@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RestController
-@RequestMapping("/api/wheather/{city}")
+@RequestMapping("/api/weather/{city}")
 public class CrudController {
 
     ConcurrentLinkedQueue<Weather> data = new ConcurrentLinkedQueue<>();
