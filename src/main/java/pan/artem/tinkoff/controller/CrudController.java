@@ -1,29 +1,26 @@
 package pan.artem.tinkoff.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
+import pan.artem.tinkoff.controller.error.ErrorInfo;
+import pan.artem.tinkoff.controller.error.GlobalExceptionHandler;
+import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
 import pan.artem.tinkoff.domain.Weather;
 import pan.artem.tinkoff.dto.WeatherDto;
+import pan.artem.tinkoff.service.WeatherService;
 
-import java.time.*;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/weather/{city}")
 public class CrudController {
 
-    ConcurrentLinkedQueue<Weather> data = new ConcurrentLinkedQueue<>();
-
-    boolean isSameDate(LocalDate today, Instant other) {
-        return ZonedDateTime
-                .ofInstant(other, ZoneOffset.UTC)
-                .toLocalDate()
-                .equals(today);
-    }
+    private final WeatherService weatherService;
 
     @Operation(
             summary = "Retrieves JSON representation of weather record for specified city",
@@ -39,24 +36,25 @@ public class CrudController {
             }
     )
     @GetMapping
-    private ResponseEntity<Weather> getWeather(
+    public ResponseEntity<Weather> getWeather(
             @PathVariable("city") String city
     ) {
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
-        var optionalWeather = data.stream()
-                .filter(weather -> weather.getRegion().equals(city)
-                        && isSameDate(today, weather.getDateTime()))
-                .findAny();
-        return ResponseEntity.of(optionalWeather);
+        var optionalWeather = weatherService.getWeather(city);
+        if (optionalWeather.isPresent()) {
+            return ResponseEntity.ok().body(optionalWeather.get());
+        }
+        throw new ResourceNotFoundException(
+                "No Weather record found for the current date in " + city
+        );
     }
 
     @Operation(summary = "Creates a new weather record for specified city")
     @PostMapping
-    private ResponseEntity<?> postWeather(
+    public ResponseEntity<?> postWeather(
             @PathVariable("city") String city,
             @Valid @RequestBody WeatherDto weatherDto
     ) {
-        data.add(new Weather(weatherDto.id(), city, weatherDto.temperature(), weatherDto.dateTime()));
+        weatherService.addWeather(city, weatherDto);
         return ResponseEntity.ok().build();
     }
 
@@ -74,30 +72,45 @@ public class CrudController {
             }
     )
     @PutMapping
-    private ResponseEntity<?> putWeather(
+    public ResponseEntity<?> putWeather(
             @PathVariable("city") String city,
             @Valid @RequestBody WeatherDto weatherDto
     ) {
-        for (var weather : data) {
-            if (weather.getId().equals(weatherDto.id()) &&
-                    weather.getDateTime().equals(weatherDto.dateTime())) {
-                weather.setTemperature(weatherDto.temperature());
-                return ResponseEntity.ok().build();
-            }
+        if (weatherService.updateWeather(city, weatherDto)) {
+            return ResponseEntity.ok().build();
         }
-
-        data.add(new Weather(weatherDto.id(), city, weatherDto.temperature(), weatherDto.dateTime()));
-        return ResponseEntity
-                .status(201)
-                .build();
+        return ResponseEntity.status(201).build();
     }
 
     @Operation(summary = "Deletes weather records with specified city")
     @DeleteMapping
-    private ResponseEntity<?> deleteWeather(
+    public ResponseEntity<?> deleteWeather(
             @PathVariable("city") String city
     ) {
-        data.removeIf(weather -> Objects.equals(weather.getRegion(), city));
+        weatherService.deleteWeathers(city);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleNotFound(
+            HttpServletRequest request, ResourceNotFoundException e
+    ) {
+        return ResponseEntity.status(404).body(
+                new ErrorInfo(request.getRequestURL().toString(),
+                        "Weather record not found: " + e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorInfo> handleValidationException(
+            HttpServletRequest request, MethodArgumentNotValidException e
+    ) {
+        return ResponseEntity.badRequest().body(
+                new ErrorInfo(
+                        request.getRequestURL().toString(),
+                        "Data format for Weather record is violated: " +
+                                GlobalExceptionHandler.methodArgumentNotValidString(e)
+                )
+        );
     }
 }
