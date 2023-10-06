@@ -1,20 +1,16 @@
-package pan.artem.tinkoff;
+package pan.artem.tinkoff.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Data;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Value
+@Data
 @AllArgsConstructor
 public class Weather {
     UUID id;
     String region;
     int temperature;
     Instant dateTime;
-
-    public Weather(String region, int temperature) {
-        this(UUID.randomUUID(), region, temperature, Instant.now());
-    }
 }

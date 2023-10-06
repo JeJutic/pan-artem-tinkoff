@@ -1,18 +1,30 @@
 import org.gradle.jvm.tasks.Jar
 
 plugins {
-    application
+    java
     id("io.freefair.lombok") version "8.3"
+    id("org.springframework.boot") version "3.1.4"
+    id("io.spring.dependency-management") version "1.1.3"
 }
+
+group = "pan.artem.tinkoff"
+version = "0.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.15")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {
@@ -32,6 +44,6 @@ tasks {
     }
 }
 
-application {
-    mainClass.set("pan.artem.tinkoff.App")
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

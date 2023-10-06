@@ -1,5 +1,7 @@
 package pan.artem.tinkoff;
 
+import pan.artem.tinkoff.domain.Weather;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
