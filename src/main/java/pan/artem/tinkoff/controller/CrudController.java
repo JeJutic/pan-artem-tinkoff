@@ -39,13 +39,8 @@ public class CrudController {
     public ResponseEntity<Weather> getWeather(
             @PathVariable("city") String city
     ) {
-        var optionalWeather = weatherService.getWeather(city);
-        if (optionalWeather.isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "No Weather record found for the current date in " + city
-            );
-        }
-        return ResponseEntity.ok().body(optionalWeather.get());
+        Weather weather = weatherService.getWeather(city);
+        return ResponseEntity.ok().body(weather);
     }
 
     @Operation(summary = "Creates a new weather record for specified city")

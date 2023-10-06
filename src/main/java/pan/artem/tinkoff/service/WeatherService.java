@@ -3,11 +3,9 @@ package pan.artem.tinkoff.service;
 import pan.artem.tinkoff.domain.Weather;
 import pan.artem.tinkoff.dto.WeatherDto;
 
-import java.util.Optional;
-
 public interface WeatherService {
 
-    Optional<Weather> getWeather(String city);
+    Weather getWeather(String city);
 
     void addWeather(String city, WeatherDto weatherDto);
 
