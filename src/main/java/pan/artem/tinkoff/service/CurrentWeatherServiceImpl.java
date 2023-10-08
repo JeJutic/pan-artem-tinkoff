@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.core.exception.AcquirePermissionCancelledException;
 import io.github.resilience4j.ratelimiter.RateLimiter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import pan.artem.tinkoff.controller.error.externalservice.ExternalServiceException;
 import pan.artem.tinkoff.controller.error.RequestNotPermitted;
@@ -14,6 +15,8 @@ import java.time.Instant;
 
 public class CurrentWeatherServiceImpl implements CurrentWeatherService {
 
+    @Value("${app.properties.weather-api-token}")
+    private String weatherApiToken;
     private final RestTemplate restTemplate;
     private final RateLimiter rateLimiter;
 
@@ -29,7 +32,7 @@ public class CurrentWeatherServiceImpl implements CurrentWeatherService {
             weatherJson = rateLimiter.executeCallable(() -> restTemplate.getForObject(
                     "https://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}",
                     String.class,
-                    "cc7c19a929d8471dbc5124457230610",
+                    weatherApiToken,
                     city
             ));
         } catch (io.github.resilience4j.ratelimiter.RequestNotPermitted | AcquirePermissionCancelledException e) {
