@@ -11,7 +11,7 @@ public class WeatherApiException extends MyAppException {
         super(message);
     }
 
-    public WeatherApiException(Throwable cause) {
-        super(cause);
+    public WeatherApiException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

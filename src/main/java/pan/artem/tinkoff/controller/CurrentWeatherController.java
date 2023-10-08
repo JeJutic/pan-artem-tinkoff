@@ -12,6 +12,7 @@ import pan.artem.tinkoff.controller.error.ErrorInfo;
 import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
 import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiInternalErrorException;
 import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiLimitExceededException;
+import pan.artem.tinkoff.controller.error.RequestNotPermitted;
 import pan.artem.tinkoff.dto.WeatherDto;
 import pan.artem.tinkoff.service.CurrentWeatherService;
 
@@ -40,6 +41,18 @@ public class CurrentWeatherController {
     public ResponseEntity<WeatherDto> getCurrentWeather(@PathVariable String city) {
         var weather = currentWeatherService.getCurrentWeather(city);
         return ResponseEntity.ok(weather);
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ErrorInfo> handleNotFound(
+            HttpServletRequest request, RequestNotPermitted e
+    ) {
+        logger.info("Rate limiter for current weather service probably exceeded", e);
+
+        return ResponseEntity.status(403).body(
+                new ErrorInfo(request.getRequestURL().toString(),
+                        "Too many requests for this service")
+        );
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
