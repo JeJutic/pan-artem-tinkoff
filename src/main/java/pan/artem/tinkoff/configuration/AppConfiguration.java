@@ -8,7 +8,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiResponseErrorHandler;
+import pan.artem.tinkoff.controller.error.externalservice.ExternalServiceResponseErrorHandler;
 import pan.artem.tinkoff.service.CurrentWeatherService;
 import pan.artem.tinkoff.service.CurrentWeatherServiceImpl;
 
@@ -20,7 +20,7 @@ public class AppConfiguration {
     @Bean
     public RestTemplate currentWeatherRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-                .errorHandler(new WeatherApiResponseErrorHandler())
+                .errorHandler(new ExternalServiceResponseErrorHandler())
                 .build();
     }
 

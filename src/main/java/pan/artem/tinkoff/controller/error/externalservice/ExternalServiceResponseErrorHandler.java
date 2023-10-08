@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.controller.error.weatherapi;
+package pan.artem.tinkoff.controller.error.externalservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +8,7 @@ import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
 
 import java.io.IOException;
 
-public class WeatherApiResponseErrorHandler implements ResponseErrorHandler {
+public class ExternalServiceResponseErrorHandler implements ResponseErrorHandler {
 
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
@@ -21,7 +21,7 @@ public class WeatherApiResponseErrorHandler implements ResponseErrorHandler {
         var statusCode = response.getStatusCode();
 
         if (statusCode.is5xxServerError()) {
-            throw new WeatherApiInternalErrorException(response.getStatusText());
+            throw new ExternalServiceInternalErrorException(response.getStatusText());
         } else if (statusCode.is4xxClientError()) {
 
             ObjectMapper mapper = new ObjectMapper();
@@ -35,11 +35,11 @@ public class WeatherApiResponseErrorHandler implements ResponseErrorHandler {
                     (statusCode.value() == 403 && errorCode == 2009)) {
                 throw new ResourceNotFoundException(message);
             } else if (statusCode.value() == 403 && errorCode == 2007) {
-                throw new WeatherApiLimitExceededException(message);
+                throw new ExternalServiceLimitExceededException(message);
             } else if (statusCode.value() == 400 && errorCode == 9999) {
-                throw new WeatherApiInternalErrorException(message);
+                throw new ExternalServiceInternalErrorException(message);
             } else {
-                throw new WeatherApiClientErrorException(
+                throw new ExternalServiceClientError(
                         message, statusCode.value(), errorCode
                 );
             }

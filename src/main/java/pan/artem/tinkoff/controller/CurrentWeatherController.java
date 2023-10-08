@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pan.artem.tinkoff.controller.error.ErrorInfo;
 import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
-import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiInternalErrorException;
-import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiLimitExceededException;
+import pan.artem.tinkoff.controller.error.externalservice.ExternalServiceInternalErrorException;
+import pan.artem.tinkoff.controller.error.externalservice.ExternalServiceLimitExceededException;
 import pan.artem.tinkoff.controller.error.RequestNotPermitted;
 import pan.artem.tinkoff.dto.WeatherDto;
 import pan.artem.tinkoff.service.CurrentWeatherService;
@@ -65,10 +65,10 @@ public class CurrentWeatherController {
         );
     }
 
-    @ExceptionHandler(WeatherApiLimitExceededException.class)
+    @ExceptionHandler(ExternalServiceLimitExceededException.class)
     public ResponseEntity<ErrorInfo> handleLimitExceededException(
             HttpServletRequest request,
-            WeatherApiLimitExceededException e
+            ExternalServiceLimitExceededException e
     ) {
         logger.warn("Weather API call limit exceeded", e);
 
@@ -80,7 +80,7 @@ public class CurrentWeatherController {
         );
     }
 
-    @ExceptionHandler(WeatherApiInternalErrorException.class)
+    @ExceptionHandler(ExternalServiceInternalErrorException.class)
     public ResponseEntity<ErrorInfo> handleInternalErrorException(HttpServletRequest request) {
         return ResponseEntity.status(503).body(
                 new ErrorInfo(
