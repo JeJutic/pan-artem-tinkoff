@@ -1,5 +1,7 @@
 package pan.artem.tinkoff.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -21,6 +23,19 @@ public class CurrentWeatherController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CurrentWeatherService currentWeatherService;
 
+    @Operation(
+            summary = "Retrieves current weather in specified location",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Specified location was not found"
+                    )
+            }
+    )
     @GetMapping
     public ResponseEntity<WeatherDto> getCurrentWeather(@PathVariable String city) {
         var weather = currentWeatherService.getCurrentWeather(city);
