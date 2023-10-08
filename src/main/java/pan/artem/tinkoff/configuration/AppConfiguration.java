@@ -1,0 +1,28 @@
+package pan.artem.tinkoff.configuration;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+import pan.artem.tinkoff.controller.error.weatherapi.WeatherApiResponseErrorHandler;
+import pan.artem.tinkoff.service.CurrentWeatherService;
+import pan.artem.tinkoff.service.CurrentWeatherServiceImpl;
+
+@Configuration
+public class AppConfiguration {
+
+    @Bean
+    public RestTemplate currentWeatherRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+                .errorHandler(new WeatherApiResponseErrorHandler())
+                .build();
+    }
+
+    @Bean
+    public CurrentWeatherService currentWeatherService(
+            @Qualifier("currentWeatherRestTemplate") RestTemplate restTemplate
+    ) {
+        return new CurrentWeatherServiceImpl(restTemplate);
+    }
+}
