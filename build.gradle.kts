@@ -25,6 +25,10 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations:2.2.15")
     implementation("io.github.resilience4j:resilience4j-ratelimiter:2.1.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

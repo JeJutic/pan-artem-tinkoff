@@ -1,0 +1,12 @@
+app.current-weather-service:
+  api-token:
+  base-url: https://api.weatherapi.com/v1
+
+resilience4j.ratelimiter:
+  instances:
+    current-weather:
+      limitForPeriod: 5
+      limitRefreshPeriod: 5s
+      timeoutDuration: 100ms
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100

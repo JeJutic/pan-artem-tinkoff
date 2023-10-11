@@ -8,10 +8,20 @@ import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
-@Validated
-@ConfigurationProperties(prefix = "app.properties")
+@ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
-    @NotEmpty
-    private String weatherApiToken;
+    @Getter
+    @Setter
+    @Validated
+    @ConfigurationProperties(prefix = "app.current-weather-service")
+    public static class CurrentWeatherProperties {
+
+        @NotEmpty
+        private String baseUrl;
+
+        @NotEmpty
+        private String apiToken;
+    }
+
 }

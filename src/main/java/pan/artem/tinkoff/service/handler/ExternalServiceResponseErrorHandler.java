@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.controller.handler;
+package pan.artem.tinkoff.service.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

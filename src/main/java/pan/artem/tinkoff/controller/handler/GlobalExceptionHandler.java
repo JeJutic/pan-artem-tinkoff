@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(403).body(
                 new ErrorInfo(request.getRequestURL().toString(),
-                        "Request could not be permitted. " +
+                        "Request not permitted. " +
                                 "There may be too many requests for this service."
                 )
         );
