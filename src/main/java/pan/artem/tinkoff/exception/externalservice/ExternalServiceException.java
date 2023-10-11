@@ -1,6 +1,6 @@
-package pan.artem.tinkoff.controller.error.externalservice;
+package pan.artem.tinkoff.exception.externalservice;
 
-import pan.artem.tinkoff.controller.error.MyAppException;
+import pan.artem.tinkoff.exception.MyAppException;
 
 public class ExternalServiceException extends MyAppException {
 

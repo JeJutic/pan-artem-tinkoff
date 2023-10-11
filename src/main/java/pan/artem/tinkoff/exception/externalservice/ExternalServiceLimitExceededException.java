@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.controller.error.externalservice;
+package pan.artem.tinkoff.exception.externalservice;
 
 public class ExternalServiceLimitExceededException extends ExternalServiceException {
 

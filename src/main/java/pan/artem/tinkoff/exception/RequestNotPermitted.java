@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.controller.error;
+package pan.artem.tinkoff.exception;
 
 public class RequestNotPermitted extends MyAppException {
 

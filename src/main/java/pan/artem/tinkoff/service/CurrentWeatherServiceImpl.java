@@ -7,8 +7,8 @@ import io.github.resilience4j.core.exception.AcquirePermissionCancelledException
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
-import pan.artem.tinkoff.controller.error.externalservice.ExternalServiceException;
-import pan.artem.tinkoff.controller.error.RequestNotPermitted;
+import pan.artem.tinkoff.exception.externalservice.ExternalServiceException;
+import pan.artem.tinkoff.exception.RequestNotPermitted;
 import pan.artem.tinkoff.dto.WeatherDto;
 
 import java.time.Instant;

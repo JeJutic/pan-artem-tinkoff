@@ -1,10 +1,14 @@
-package pan.artem.tinkoff.controller.error.externalservice;
+package pan.artem.tinkoff.controller.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
-import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
+import pan.artem.tinkoff.exception.ResourceNotFoundException;
+import pan.artem.tinkoff.exception.externalservice.ExternalServiceClientErrorException;
+import pan.artem.tinkoff.exception.externalservice.ExternalServiceInternalErrorException;
+import pan.artem.tinkoff.exception.externalservice.ExternalServiceLimitExceededException;
 
 import java.io.IOException;
 
@@ -31,15 +35,15 @@ public class ExternalServiceResponseErrorHandler implements ResponseErrorHandler
             int errorCode = root.path("code").asInt();
             String message = root.path("message").asText();
 
-            if ((statusCode.value() == 400 && errorCode == 1006) ||
-                    (statusCode.value() == 403 && errorCode == 2009)) {
+            if ((statusCode == HttpStatus.BAD_REQUEST && errorCode == 1006) ||
+                    (statusCode == HttpStatus.FORBIDDEN && errorCode == 2009)) {
                 throw new ResourceNotFoundException(message);
-            } else if (statusCode.value() == 403 && errorCode == 2007) {
+            } else if (statusCode == HttpStatus.FORBIDDEN && errorCode == 2007) {
                 throw new ExternalServiceLimitExceededException(message);
-            } else if (statusCode.value() == 400 && errorCode == 9999) {
+            } else if (statusCode == HttpStatus.BAD_REQUEST && errorCode == 9999) {
                 throw new ExternalServiceInternalErrorException(message);
             } else {
-                throw new ExternalServiceClientError(
+                throw new ExternalServiceClientErrorException(
                         message, statusCode.value(), errorCode
                 );
             }
