@@ -2,7 +2,7 @@ package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
+import pan.artem.tinkoff.exception.ResourceNotFoundException;
 import pan.artem.tinkoff.domain.Weather;
 import pan.artem.tinkoff.dto.WeatherDto;
 import pan.artem.tinkoff.repository.WeatherRepository;

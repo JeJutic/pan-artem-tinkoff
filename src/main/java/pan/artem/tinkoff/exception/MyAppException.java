@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.controller.error;
+package pan.artem.tinkoff.exception;
 
 public abstract class MyAppException extends RuntimeException {
 
@@ -11,5 +11,9 @@ public abstract class MyAppException extends RuntimeException {
 
     public MyAppException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public MyAppException(Throwable cause) {
+        super(cause);
     }
 }

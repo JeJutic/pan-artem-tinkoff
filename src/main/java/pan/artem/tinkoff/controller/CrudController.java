@@ -1,16 +1,11 @@
 package pan.artem.tinkoff.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
-import pan.artem.tinkoff.controller.error.ErrorInfo;
-import pan.artem.tinkoff.controller.error.GlobalExceptionHandler;
-import pan.artem.tinkoff.controller.error.ResourceNotFoundException;
 import pan.artem.tinkoff.domain.Weather;
 import pan.artem.tinkoff.dto.WeatherDto;
 import pan.artem.tinkoff.service.WeatherService;
@@ -84,28 +79,5 @@ public class CrudController {
     ) {
         weatherService.deleteWeathers(city);
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorInfo> handleNotFound(
-            HttpServletRequest request, ResourceNotFoundException e
-    ) {
-        return ResponseEntity.status(404).body(
-                new ErrorInfo(request.getRequestURL().toString(),
-                        "Weather record not found: " + e.getMessage())
-        );
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorInfo> handleValidationException(
-            HttpServletRequest request, MethodArgumentNotValidException e
-    ) {
-        return ResponseEntity.badRequest().body(
-                new ErrorInfo(
-                        request.getRequestURL().toString(),
-                        "Data format for Weather record is violated: " +
-                                GlobalExceptionHandler.methodArgumentNotValidString(e)
-                )
-        );
     }
 }
