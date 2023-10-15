@@ -32,6 +32,8 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
 
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.hibernate.orm:hibernate-core:6.3.1.Final")
     implementation("org.liquibase:liquibase-core:4.24.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
