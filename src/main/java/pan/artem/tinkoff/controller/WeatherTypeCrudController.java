@@ -41,9 +41,9 @@ public class WeatherTypeCrudController {
     @PostMapping
     public ResponseEntity<?> postWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherTypeDto weatherDto
+            @Valid @RequestBody WeatherTypeDto weatherTypeDto
     ) {
-        weatherTypeService.addWeather(city, weatherDto);
+        weatherTypeService.addWeather(city, weatherTypeDto);
         return ResponseEntity.ok().build();
     }
 
@@ -52,7 +52,7 @@ public class WeatherTypeCrudController {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Weather record updated"
+                            description = "Weather type record updated"
                     ),
                     @ApiResponse(
                             responseCode = "201",
@@ -63,9 +63,9 @@ public class WeatherTypeCrudController {
     @PutMapping
     public ResponseEntity<?> putWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherTypeDto weatherDto
+            @Valid @RequestBody WeatherTypeDto weatherTypeDto
     ) {
-        if (weatherTypeService.updateWeather(city, weatherDto)) {
+        if (weatherTypeService.updateWeather(city, weatherTypeDto)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(201).build();
