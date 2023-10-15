@@ -12,7 +12,7 @@ import java.time.ZoneOffset;
 
 @AllArgsConstructor
 @Service
-public class WeatherServiceImpl implements WeatherService {
+public class WeatherServiceImpl implements WeatherCrudService<WeatherDto, Weather> {
 
     private final WeatherRepository weatherRepository;
 

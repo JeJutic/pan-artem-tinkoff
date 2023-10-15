@@ -6,19 +6,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
-import pan.artem.tinkoff.domain.Weather;
-import pan.artem.tinkoff.dto.WeatherDto;
+import pan.artem.tinkoff.dto.WeatherTypeDto;
 import pan.artem.tinkoff.service.WeatherCrudService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/weather/{city}")
-public class CrudController {
+@RequestMapping("/api/weather-type/{city}")
+public class WeatherTypeCrudController {
 
-    private final WeatherCrudService<WeatherDto, Weather> weatherService;
+    private final WeatherCrudService<WeatherTypeDto, WeatherTypeDto> weatherTypeService;
 
     @Operation(
-            summary = "Retrieves JSON representation of weather record for specified city",
+            summary = "Retrieves JSON representation of weather type record for specified city",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -26,30 +25,30 @@ public class CrudController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "No weather record for specified city found"
+                            description = "No weather type record for specified city found"
                     )
             }
     )
     @GetMapping
-    public ResponseEntity<Weather> getWeather(
+    public ResponseEntity<WeatherTypeDto> getWeather(
             @PathVariable("city") String city
     ) {
-        Weather weather = weatherService.getWeather(city);
+        WeatherTypeDto weather = weatherTypeService.getWeather(city);
         return ResponseEntity.ok().body(weather);
     }
 
-    @Operation(summary = "Creates a new weather record for specified city")
+    @Operation(summary = "Creates a new weather type record for specified city")
     @PostMapping
     public ResponseEntity<?> postWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherTypeDto weatherDto
     ) {
-        weatherService.addWeather(city, weatherDto);
+        weatherTypeService.addWeather(city, weatherDto);
         return ResponseEntity.ok().build();
     }
 
     @Operation(
-            summary = "Updates weather record with specified city and time or creates it",
+            summary = "Updates weather type record with specified city and time or creates it",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -57,27 +56,27 @@ public class CrudController {
                     ),
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Weather record created"
+                            description = "Weather type record created"
                     )
             }
     )
     @PutMapping
     public ResponseEntity<?> putWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherTypeDto weatherDto
     ) {
-        if (weatherService.updateWeather(city, weatherDto)) {
+        if (weatherTypeService.updateWeather(city, weatherDto)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(201).build();
     }
 
-    @Operation(summary = "Deletes weather records with specified city")
+    @Operation(summary = "Deletes weather type records with specified city")
     @DeleteMapping
     public ResponseEntity<?> deleteWeather(
             @PathVariable("city") String city
     ) {
-        weatherService.deleteWeathers(city);
+        weatherTypeService.deleteWeathers(city);
         return ResponseEntity.ok().build();
     }
 }
