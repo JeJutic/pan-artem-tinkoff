@@ -2,6 +2,18 @@ app.current-weather-service:
   api-token:
   base-url: https://api.weatherapi.com/v1
 
+spring:
+  liquibase:
+    change-log: classpath:changelog/main-db-changelog.xml
+  datasource:
+    url: jdbc:h2:mem:maindb
+    username: server
+    password: password
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+
 resilience4j.ratelimiter:
   instances:
     current-weather:
