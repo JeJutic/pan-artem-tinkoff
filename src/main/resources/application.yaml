@@ -1,5 +1,5 @@
 app.current-weather-service:
-  api-token: cc7c19a929d8471dbc5124457230610
+  api-token:
   base-url: https://api.weatherapi.com/v1
 
 spring:
