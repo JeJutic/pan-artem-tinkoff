@@ -1,20 +1,21 @@
 package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
-import pan.artem.tinkoff.entity.Weather;
-import pan.artem.tinkoff.repository.WeatherRepository;
+import pan.artem.tinkoff.repository.jdbc.WeatherRepositoryJdbc;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
 @AllArgsConstructor
 @Service
-public class WeatherServiceImpl implements WeatherCrudService {
+@Primary
+public class WeatherServiceJdbc implements WeatherCrudService {
 
-    private final WeatherRepository weatherRepository;
+    private final WeatherRepositoryJdbc weatherRepository;
 
     @Override
     public WeatherFullDto getWeather(String city) {
@@ -25,12 +26,7 @@ public class WeatherServiceImpl implements WeatherCrudService {
                     "No Weather record found for the current date in " + city
             );
         }
-        Weather weather = optional.get();
-        return new WeatherFullDto(
-                weather.getTemperature(),
-                weather.getDateTime(),
-                weather.getWeatherType().getDescription()
-        );
+        return optional.get().weatherDto();
     }
 
     @Override
@@ -40,7 +36,8 @@ public class WeatherServiceImpl implements WeatherCrudService {
 
     @Override
     public boolean updateWeather(String city, WeatherFullDto weatherDto) {
-        return weatherRepository.updateWeather(city, weatherDto);
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        return weatherRepository.updateWeather(city, today, weatherDto);
     }
 
     @Override

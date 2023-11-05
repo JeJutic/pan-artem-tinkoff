@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.repository.jpa;
+package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -7,14 +7,17 @@ import pan.artem.tinkoff.entity.City;
 import pan.artem.tinkoff.entity.Weather;
 import pan.artem.tinkoff.entity.WeatherType;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
-import pan.artem.tinkoff.repository.WeatherRepository;
+import pan.artem.tinkoff.repository.jpa.CityRepositoryJPA;
+import pan.artem.tinkoff.repository.jpa.WeatherRepositoryJPA;
+import pan.artem.tinkoff.repository.jpa.WeatherTypeRepositoryJPA;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class WeatherRepositoryJPAAdapter implements WeatherRepository {
+public class WeatherServiceJPA implements WeatherCrudService {
 
     private final WeatherRepositoryJPA weatherRepositoryJPA;
     private final WeatherTypeRepositoryJPA weatherTypeRepositoryJPA;
@@ -38,12 +41,28 @@ public class WeatherRepositoryJPAAdapter implements WeatherRepository {
         return weatherType;
     }
 
-    @Override
-    public Optional<Weather> getWeather(String city, LocalDate date) {
+    private Optional<Weather> getWeather(String city, LocalDate date) {
         var cityEntity = getCity(city);
         return cityEntity.getWeathers().stream().filter(
                 weather -> weather.getDateTime().toLocalDate().equals(date)
         ).findAny();
+    }
+
+    @Override
+    public WeatherFullDto getWeather(String city) {
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        var optional = getWeather(city, today);
+        if (optional.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "No Weather record found for the current date in " + city
+            );
+        }
+        Weather weather = optional.get();
+        return new WeatherFullDto(
+                weather.getTemperature(),
+                weather.getDateTime(),
+                weather.getWeatherType().getDescription()
+        );
     }
 
     private void addWeather(City city, WeatherFullDto weatherDto, WeatherType weatherType) {
