@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
-import pan.artem.tinkoff.domain.Weather;
-import pan.artem.tinkoff.dto.WeatherDto;
+import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.service.WeatherCrudService;
 
 @AllArgsConstructor
@@ -15,7 +14,7 @@ import pan.artem.tinkoff.service.WeatherCrudService;
 @RequestMapping("/api/weather/{city}")
 public class CrudController {
 
-    private final WeatherCrudService<WeatherDto, Weather> weatherService;
+    private final WeatherCrudService weatherService;
 
     @Operation(
             summary = "Retrieves JSON representation of weather record for specified city",
@@ -26,23 +25,35 @@ public class CrudController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "No weather record for specified city found"
+                            description = "Resource not found"
                     )
             }
     )
     @GetMapping
-    public ResponseEntity<Weather> getWeather(
+    public ResponseEntity<WeatherFullDto> getWeather(
             @PathVariable("city") String city
     ) {
-        Weather weather = weatherService.getWeather(city);
+        var weather = weatherService.getWeather(city);
         return ResponseEntity.ok().body(weather);
     }
 
-    @Operation(summary = "Creates a new weather record for specified city")
+    @Operation(
+            summary = "Creates a new weather record for specified city",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Weather record created"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Resource not found"
+                    )
+            }
+    )
     @PostMapping
     public ResponseEntity<?> postWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherFullDto weatherDto
     ) {
         weatherService.addWeather(city, weatherDto);
         return ResponseEntity.ok().build();
@@ -58,13 +69,17 @@ public class CrudController {
                     @ApiResponse(
                             responseCode = "201",
                             description = "Weather record created"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Resource not found"
                     )
             }
     )
     @PutMapping
     public ResponseEntity<?> putWeather(
             @PathVariable("city") String city,
-            @Valid @RequestBody WeatherDto weatherDto
+            @Valid @RequestBody WeatherFullDto weatherDto
     ) {
         if (weatherService.updateWeather(city, weatherDto)) {
             return ResponseEntity.ok().build();

@@ -1,10 +1,11 @@
-package pan.artem.tinkoff.repository;
+package pan.artem.tinkoff.repository.jdbc;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import pan.artem.tinkoff.dto.WeatherTypeDto;
+import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
+import pan.artem.tinkoff.repository.WeatherTypeRepository;
 
 import java.util.Optional;
 
@@ -15,16 +16,16 @@ public class WeatherTypeRepositoryJdbc implements WeatherTypeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<WeatherTypeDto> getWeather(String city) {
-        WeatherTypeDto weatherTypeDto = jdbcTemplate.queryForObject(
+    public Optional<WeatherFullDto> getWeather(String city) {
+        WeatherFullDto weatherFullDto = jdbcTemplate.queryForObject(
             "SELECT description " +
                     "FROM city LEFT OUTER JOIN weather ON city.id = weather.city_id " +
                     "LEFT OUTER JOIN weather_type ON weather_type.id = weather.weather_type_id " +
                     "WHERE city.name = ? LIMIT 1",
-                WeatherTypeDto.class,
+                WeatherFullDto.class,
                 city
         );
-        return Optional.ofNullable(weatherTypeDto);
+        return Optional.ofNullable(weatherFullDto);
     }
 
     private int getCityId(String city) {
@@ -39,16 +40,16 @@ public class WeatherTypeRepositoryJdbc implements WeatherTypeRepository {
         return value;
     }
 
-    private int getWeatherTypeId(WeatherTypeDto weatherTypeDto) {
+    private int getWeatherTypeId(WeatherFullDto weatherFullDto) {
         Integer value = jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SELECT id FROM weather_type WHERE description = ? LIMIT 1)",
                 Integer.class,
-                weatherTypeDto.description()
+                weatherFullDto.weatherType()
         );
         if (value == null) {
             throw new ResourceNotFoundException(
                     "No weather type characterized as \"" +
-                            weatherTypeDto.description() +
+                            weatherFullDto.weatherType() +
                             "\" found"
             );
         }
@@ -64,16 +65,16 @@ public class WeatherTypeRepositoryJdbc implements WeatherTypeRepository {
     }
 
     @Override
-    public void addWeather(String city, WeatherTypeDto weatherTypeDto) {
+    public void addWeather(String city, WeatherFullDto weatherFullDto) {
         int cityId = getCityId(city);
-        int weatherTypeId = getWeatherTypeId(weatherTypeDto);
+        int weatherTypeId = getWeatherTypeId(weatherFullDto);
         addWeather(cityId, weatherTypeId);
     }
 
     @Override
-    public boolean updateWeather(String city, WeatherTypeDto weatherTypeDto) {
+    public boolean updateWeather(String city, WeatherFullDto weatherFullDto) {
         int cityId = getCityId(city);
-        int weatherTypeId = getWeatherTypeId(weatherTypeDto);
+        int weatherTypeId = getWeatherTypeId(weatherFullDto);
         int rowsAffected = jdbcTemplate.update(
                 "UPDATE weather SET weather_type_id = ? WHERE city_id = ?",
                 weatherTypeId,

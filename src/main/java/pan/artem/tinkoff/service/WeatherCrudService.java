@@ -1,12 +1,14 @@
 package pan.artem.tinkoff.service;
 
-public interface WeatherCrudService<T, K> {
+import pan.artem.tinkoff.dto.WeatherFullDto;
 
-    K getWeather(String city);
+public interface WeatherCrudService {
 
-    void addWeather(String city, T weatherDto);
+    WeatherFullDto getWeather(String city);
 
-    boolean updateWeather(String city, T weatherDto);
+    void addWeather(String city, WeatherFullDto weatherDto);
+
+    boolean updateWeather(String city, WeatherFullDto weatherDto);
 
     void deleteWeathers(String city);
 }

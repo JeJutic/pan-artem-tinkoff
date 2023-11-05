@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <preConditions>
+        <runningAs  username="server"/>
+    </preConditions>
+
+    <changeSet  id="city-values"  author="panart">
+        <insert tableName="city">
+            <column name="name" value="Saint-Petersburg"/>
+        </insert>
+        <insert tableName="city">
+            <column name="name" value="Yekaterinburg"/>
+        </insert>
+        <insert tableName="city">
+            <column name="name" value="Moscow"/>
+        </insert>
+    </changeSet>
+
+    <changeSet  id="weather_type-values"  author="panart">
+        <insert tableName="weather_type">
+            <column name="description" value="sunny"/>
+        </insert>
+        <insert tableName="weather_type">
+            <column name="description" value="rainy"/>
+        </insert>
+        <insert tableName="weather_type">
+            <column name="description" value="cloudy"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

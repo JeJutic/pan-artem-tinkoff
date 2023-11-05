@@ -12,16 +12,13 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeatherTypeEntity {
+public class WeatherType {
 
     @Id
     private Long id;
     private String description;
 
-    @OneToMany
-    @JoinTable(name = "weather",
-            joinColumns = @JoinColumn(name = "weather_type_id"),
-            inverseJoinColumns = @JoinColumn(name = "city_id"))
-    private List<CityEntity> cities;
+    @OneToMany(mappedBy = "weatherType")
+    private List<Weather> weathers;
 
 }
