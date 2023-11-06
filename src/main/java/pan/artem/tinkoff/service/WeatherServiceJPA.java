@@ -2,6 +2,8 @@ package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.entity.City;
 import pan.artem.tinkoff.entity.Weather;
@@ -34,9 +36,9 @@ public class WeatherServiceJPA implements WeatherCrudService {
     private WeatherType getWeatherType(String description) {
         var weatherType = weatherTypeRepositoryJPA.getByDescription(description);
         if (weatherType == null) {
-            throw new ResourceNotFoundException(
-                    "No weather type with description '" + description + "' found"
-            );
+            weatherType = new WeatherType();
+            weatherType.setDescription(description);
+            weatherTypeRepositoryJPA.save(weatherType);
         }
         return weatherType;
     }
@@ -74,6 +76,7 @@ public class WeatherServiceJPA implements WeatherCrudService {
         ));
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public void addWeather(String city, WeatherFullDto weatherDto) {
         var cityEntity = getCity(city);
@@ -81,6 +84,7 @@ public class WeatherServiceJPA implements WeatherCrudService {
         addWeather(cityEntity, weatherDto, weatherType);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public boolean updateWeather(String city, WeatherFullDto weatherDto) {
         var cityEntity = getCity(city);
