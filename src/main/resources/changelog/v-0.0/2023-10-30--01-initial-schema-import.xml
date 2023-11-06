@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <preConditions>
+        <runningAs username="server"/>
+    </preConditions>
+
+    <changeSet id="city-table" author="panart">
+        <createTable tableName="city">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="city-index" author="panart">
+        <createIndex tableName="city" indexName="city_index" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="weather_type-table" author="panart">
+        <createTable tableName="weather_type">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="description" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="weather_type-index" author="panart">
+        <createIndex tableName="weather_type" indexName="weather_type_index" unique="true">
+            <column name="description"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="weather-table" author="panart">
+        <createTable tableName="weather">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="temperature" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_time" type="timestamp without time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weather_type_id" type="int">
+                <constraints foreignKeyName="fk_weather_type" references="weather_type(id)"/>
+            </column>
+            <column name="city_id" type="int">
+                <constraints foreignKeyName="fk_city" references="city(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="weather-index" author="panart">
+        <createIndex tableName="weather" indexName="weather_index">
+            <column name="temperature"/>
+            <column name="date_time"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

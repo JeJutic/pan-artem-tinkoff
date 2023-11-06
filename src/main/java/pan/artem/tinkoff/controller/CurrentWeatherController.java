@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pan.artem.tinkoff.dto.WeatherDto;
+import pan.artem.tinkoff.dto.WeatherDtoSaveResult;
 import pan.artem.tinkoff.service.CurrentWeatherService;
 
 @AllArgsConstructor
@@ -29,8 +29,8 @@ public class CurrentWeatherController {
             }
     )
     @GetMapping
-    public ResponseEntity<WeatherDto> getCurrentWeather(@PathVariable String city) {
-        var weather = currentWeatherService.getCurrentWeather(city);
+    public ResponseEntity<WeatherDtoSaveResult> getCurrentWeather(@PathVariable String city) {
+        var weather = currentWeatherService.getAndSaveCurrentWeather(city);
         return ResponseEntity.ok(weather);
     }
 }

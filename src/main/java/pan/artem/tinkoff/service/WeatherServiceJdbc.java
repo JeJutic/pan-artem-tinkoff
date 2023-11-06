@@ -1,23 +1,24 @@
 package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
-import pan.artem.tinkoff.domain.Weather;
-import pan.artem.tinkoff.dto.WeatherDto;
-import pan.artem.tinkoff.repository.WeatherRepository;
+import pan.artem.tinkoff.repository.jdbc.WeatherRepositoryJdbc;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
 @AllArgsConstructor
 @Service
-public class WeatherServiceImpl implements WeatherService {
+@Primary
+public class WeatherServiceJdbc implements WeatherCrudService {
 
-    private final WeatherRepository weatherRepository;
+    private final WeatherRepositoryJdbc weatherRepository;
 
     @Override
-    public Weather getWeather(String city) {
+    public WeatherFullDto getWeather(String city) {
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         var optional = weatherRepository.getWeather(city, today);
         if (optional.isEmpty()) {
@@ -25,17 +26,18 @@ public class WeatherServiceImpl implements WeatherService {
                     "No Weather record found for the current date in " + city
             );
         }
-        return optional.get();
+        return optional.get().weatherDto();
     }
 
     @Override
-    public void addWeather(String city, WeatherDto weatherDto) {
+    public void addWeather(String city, WeatherFullDto weatherDto) {
         weatherRepository.addWeather(city, weatherDto);
     }
 
     @Override
-    public boolean updateWeather(String city, WeatherDto weatherDto) {
-        return weatherRepository.updateWeather(city, weatherDto);
+    public boolean updateWeather(String city, WeatherFullDto weatherDto) {
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        return weatherRepository.updateWeather(city, today, weatherDto);
     }
 
     @Override

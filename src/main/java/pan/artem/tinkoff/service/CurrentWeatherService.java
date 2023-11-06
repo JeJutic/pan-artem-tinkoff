@@ -1,8 +1,11 @@
 package pan.artem.tinkoff.service;
 
-import pan.artem.tinkoff.dto.WeatherDto;
+import pan.artem.tinkoff.dto.WeatherDtoSaveResult;
+import pan.artem.tinkoff.dto.WeatherFullDto;
 
 public interface CurrentWeatherService {
 
-    WeatherDto getCurrentWeather(String city);
+    WeatherFullDto getCurrentWeather(String city);
+
+    WeatherDtoSaveResult getAndSaveCurrentWeather(String city);
 }
