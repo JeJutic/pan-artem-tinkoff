@@ -11,7 +11,6 @@
         </or>
     </preConditions>
 
-    <include file="v-0.0/changelog-v.0.0-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.1/changelog-v.0.1-cumulative.xml" relativeToChangelogFile="true"/>
+    <include file="2023-11-06--01-authentication-schema-import.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
