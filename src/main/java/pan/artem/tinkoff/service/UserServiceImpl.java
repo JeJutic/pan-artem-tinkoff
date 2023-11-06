@@ -1,10 +1,9 @@
 package pan.artem.tinkoff.service;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pan.artem.tinkoff.entity.UserEntity;
@@ -24,7 +23,10 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     public void addAdmin() {
-        registerUser("admin", properties.getAdminPassword(), "ADMIN");
+        try {
+            registerUser("admin", properties.getAdminPassword(), "ADMIN");
+        } catch (DataIntegrityViolationException ignored) { // admin user might be already created
+        }
     }
 
     @Override

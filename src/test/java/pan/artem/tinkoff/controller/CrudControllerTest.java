@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,12 +18,9 @@ import pan.artem.tinkoff.dto.WeatherFullDto;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -45,6 +43,7 @@ class CrudControllerTest {
     private static final LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void happyPath() throws Exception {
         ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
         WeatherFullDto weatherDto = new WeatherFullDto(
@@ -103,6 +102,7 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void yesterdayWeather() throws Exception {
         ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
 
@@ -111,15 +111,16 @@ class CrudControllerTest {
         );
         String json = mapper.writeValueAsString(weatherDto);
 
-        mockMvc.perform(post(base + "Moscow")
+        mockMvc.perform(post(base + "Yekaterinburg")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Moscow"))
+        mockMvc.perform(get(base + "Yekaterinburg"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void unknownCity() throws Exception {
         ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
 
@@ -131,6 +132,64 @@ class CrudControllerTest {
         mockMvc.perform(post(base + "moskva")
                         .contentType("application/json")
                         .content(json))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void addWeather() throws Exception {
+        ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
+
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -10, now, "rainy"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(post(base + "Moscow").with(user("user"))
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post(base + "Moscow").with(user("admin").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(base + "Moscow").with(user("user")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(base + "Moscow").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void putWeather() throws Exception {
+        ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
+
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -10, now, "rainy"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(put(base + "Moscow").with(user("user"))
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(put(base + "Moscow").with(user("admin").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().is2xxSuccessful());
+        mockMvc.perform(get(base + "Moscow").with(user("user")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(base + "Moscow").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteWeather() throws Exception {
+        mockMvc.perform(delete(base + "Moscow").with(user("user")))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(delete(base + "Moscow").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get(base + "Moscow").with(user("user")))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get(base + "Moscow").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isNotFound());
     }
 }
