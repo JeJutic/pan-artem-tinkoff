@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -108,7 +107,7 @@ public class GlobalExceptionHandler {
             HttpServletRequest request,
             AuthenticationException e
     ) {
-        logger.info("", e);
+        logger.warn("User's authentication failed (request: {})", request, e);
 
         return ResponseEntity.status(401).body(
                 new ErrorInfo(request.getRequestURL().toString(),

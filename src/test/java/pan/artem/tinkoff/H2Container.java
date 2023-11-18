@@ -2,8 +2,11 @@ package pan.artem.tinkoff;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategyTarget;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
 
 @Testcontainers
 public class H2Container extends GenericContainer<H2Container> {
@@ -19,17 +22,17 @@ public class H2Container extends GenericContainer<H2Container> {
             container = new H2Container()
                     .withExposedPorts(81, 1521)
                     .withEnv("H2_OPTIONS", "-ifNotExists")
-//                    .waitingFor(new WaitStrategy() {
-//                        @Override
-//                        public void waitUntilReady(WaitStrategyTarget waitStrategyTarget) {
-//                        }
-//
-//                        @Override
-//                        public WaitStrategy withStartupTimeout(Duration startupTimeout) {
-//                            return this;
-//                        }
-//                    });   // a workaround in case defaultWaitStrategy now works for you
-                    .waitingFor(Wait.defaultWaitStrategy());
+                    .waitingFor(new WaitStrategy() {
+                        @Override
+                        public void waitUntilReady(WaitStrategyTarget waitStrategyTarget) {
+                        }
+
+                        @Override
+                        public WaitStrategy withStartupTimeout(Duration startupTimeout) {
+                            return this;
+                        }
+                    });   // a workaround in case defaultWaitStrategy now works for you
+//                    .waitingFor(Wait.defaultWaitStrategy());
         }
         return container;
     }

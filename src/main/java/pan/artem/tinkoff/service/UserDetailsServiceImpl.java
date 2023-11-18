@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     "no user with username " + username + " found"
             );
         }
-        var role = new SimpleGrantedAuthority(user.getRole().getName());
+        var role = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName());
 
         return new User(username, user.getPassword(), List.of(role));
     }
