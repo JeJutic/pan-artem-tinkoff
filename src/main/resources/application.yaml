@@ -2,7 +2,6 @@ app:
   current-weather-service:
     api-token: cc7c19a929d8471dbc5124457230610
     base-url: https://api.weatherapi.com/v1
-  admin-password: cucumber
 
 spring:
   liquibase:

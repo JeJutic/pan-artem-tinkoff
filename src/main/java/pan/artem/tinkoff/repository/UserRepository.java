@@ -1,9 +1,9 @@
 package pan.artem.tinkoff.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pan.artem.tinkoff.entity.UserEntity;
+import pan.artem.tinkoff.entity.User;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    UserEntity findByName(String name);
+    User findByName(String name);
 }
