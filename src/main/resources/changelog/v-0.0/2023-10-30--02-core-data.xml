@@ -21,6 +21,9 @@
         <insert tableName="city">
             <column name="name" value="Moscow"/>
         </insert>
+        <insert tableName="city">
+            <column name="name" value="Kazan"/>
+        </insert>
     </changeSet>
 
     <changeSet  id="weather_type-values"  author="panart">

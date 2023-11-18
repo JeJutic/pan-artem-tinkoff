@@ -1,6 +1,7 @@
 package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
+@Primary
 public class WeatherServiceJPA implements WeatherCrudService {
 
     private final WeatherRepositoryJPA weatherRepositoryJPA;

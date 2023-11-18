@@ -1,6 +1,7 @@
 package pan.artem.tinkoff.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.client.RestTemplate;
@@ -15,11 +16,17 @@ import static org.mockito.Mockito.when;
 
 class CurrentWeatherServiceImplTest {
 
+    private AppProperties.CurrentWeatherProperties weatherProperties;
+    private RestTemplate restTemplate;
+
+    @BeforeEach
+    void init() {
+        weatherProperties = Mockito.mock(AppProperties.CurrentWeatherProperties.class);
+        restTemplate = Mockito.mock(RestTemplate.class);
+    }
+
     @Test
     void getCurrentWeather() {
-        AppProperties.CurrentWeatherProperties weatherProperties =
-                Mockito.mock(AppProperties.CurrentWeatherProperties.class);
-        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         when(restTemplate.getForObject(any(), any(), any(), any()))
                 .thenReturn(new CurrentWeatherDto(
                         new CurrentDto(10, new ConditionDto("rainy"))
