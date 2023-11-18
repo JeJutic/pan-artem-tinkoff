@@ -12,9 +12,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
-    @NotEmpty
-    private String adminPassword;
-
     @Getter
     @Setter
     @Validated

@@ -48,4 +48,15 @@
         </insert>
     </changeSet>
 
+    <changeSet  id="admin-user"  author="panart">
+        <insert tableName="user_table">
+            <column name="name" value="admin"/>
+            <column name="password"
+                    value="$2a$12$SN87677MCedt0CmTfH9EIeYkMXyIMIq/boDvLPzqOAw2Cd0pcxNpC"/>
+            <column name="role_id" value="2"/>
+<!--            maybe not the best idea to set to constant dependent on order of insertions -->
+<!--            but in the worst scenario, admin won't be admin-->
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
