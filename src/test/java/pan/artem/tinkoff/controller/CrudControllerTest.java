@@ -2,6 +2,7 @@ package pan.artem.tinkoff.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import pan.artem.tinkoff.H2Container;
 import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.entity.Weather;
 import pan.artem.tinkoff.repository.jpa.WeatherRepositoryJPA;
+import pan.artem.tinkoff.service.WeatherCrudService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -42,8 +44,12 @@ class CrudControllerTest {
     @Autowired
     private MappingJackson2HttpMessageConverter springMvcJacksonConverter;
     private ObjectMapper mapper;
+
+    @Autowired
+    private WeatherCrudService weatherService;
     @Autowired
     private WeatherRepositoryJPA weatherRepository;
+
     @Container
     static private H2Container h2 = H2Container.getInstance();
 
@@ -58,6 +64,11 @@ class CrudControllerTest {
     @PostConstruct
     void init() {
         mapper = springMvcJacksonConverter.getObjectMapper();
+    }
+
+    @AfterEach
+    void afterEach() {
+        weatherRepository.deleteAll();
     }
 
     private boolean equals(Weather weatherEntity, String city, WeatherFullDto weatherDto) {
@@ -75,7 +86,21 @@ class CrudControllerTest {
     }
 
     @Test
-    void postAndGetWeather() throws Exception {
+    void getWeather() throws Exception {
+        weatherService.addWeather("Moscow", new WeatherFullDto(
+                -10, now, "rainy"
+        ));
+
+        mockMvc.perform(get(base + "Moscow"))
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.temperature").value(-10),
+                        jsonPath("$.weatherType").value("rainy")
+                );
+    }
+
+    @Test
+    void postWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, now, "rainy"
         );
@@ -85,17 +110,11 @@ class CrudControllerTest {
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Moscow"))
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.temperature").value(-10),
-                        jsonPath("$.weatherType").value("rainy")
-                );
         Assertions.assertTrue(isPresent("Moscow", weatherDto));
     }
 
     @Test
-    void putAndGetWeather() throws Exception {
+    void putWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -11, now, "light rain"
         );
@@ -105,60 +124,29 @@ class CrudControllerTest {
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().is(201));
-        mockMvc.perform(get(base + "Saint-Petersburg"))
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.temperature").value(-11),
-                        jsonPath("$.weatherType").value("light rain")
-                );
         Assertions.assertTrue(isPresent("Saint-Petersburg", weatherDto));
-    }
-
-    @Test
-    void postAndPutWeather() throws Exception {
-        WeatherFullDto weatherDto = new WeatherFullDto(
-                -11, now, "light rain"
-        );
-        String json = mapper.writeValueAsString(weatherDto);
-
-        mockMvc.perform(post(base + "Yekaterinburg")
-                        .contentType("application/json")
-                        .content(json))
-                .andExpect(status().isOk());
 
         weatherDto = new WeatherFullDto(
                 2, now, "sunny"
         );
         json = mapper.writeValueAsString(weatherDto);
 
-        mockMvc.perform(put(base + "Yekaterinburg")
+        mockMvc.perform(put(base + "Saint-Petersburg")
                         .contentType("application/json")
                         .content(json))
-                .andExpect(status().is(200));
-        mockMvc.perform(get(base + "Yekaterinburg"))
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.temperature").value(2),
-                        jsonPath("$.weatherType").value("sunny")
-                );
-        Assertions.assertTrue(isPresent("Yekaterinburg", weatherDto));
+                .andExpect(status().isOk());
+        Assertions.assertTrue(isPresent("Saint-Petersburg", weatherDto));
     }
 
     @Test
-    void postAndDeleteWeather() throws Exception {
+    void deleteWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, now, "rainy"
         );
-        String json = mapper.writeValueAsString(weatherDto);
-
-        mockMvc.perform(post(base + "Moscow")
-                        .contentType("application/json")
-                        .content(json))
-                .andExpect(status().isOk());
+        weatherService.addWeather("Moscow", weatherDto);
 
         mockMvc.perform(delete(base + "Saint-Petersburg"))
                 .andExpect(status().isOk());
-
         mockMvc.perform(delete(base + "moskva"))
                 .andExpect(status().isOk());
         Assertions.assertTrue(isPresent("Moscow", weatherDto));
@@ -175,13 +163,13 @@ class CrudControllerTest {
         );
         String json = mapper.writeValueAsString(weatherDto);
 
-        mockMvc.perform(post(base + "Kazan")
+        mockMvc.perform(post(base + "Moscow")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Kazan"))
+        mockMvc.perform(get(base + "Moscow"))
                 .andExpect(status().isNotFound());
-        Assertions.assertTrue(isPresent("Kazan", weatherDto));
+        Assertions.assertTrue(isPresent("Moscow", weatherDto));
     }
 
     @Test
