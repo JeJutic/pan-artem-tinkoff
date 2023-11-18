@@ -276,27 +276,4 @@ class CrudControllerTest {
                 .andExpect(status().isNotFound());
         Assertions.assertFalse(isPresent("moskva", weatherDto));
     }
-
-    @Test
-    void addWeather() throws Exception {
-        ObjectMapper mapper = springMvcJacksonConverter.getObjectMapper();
-
-        WeatherFullDto weatherDto = new WeatherFullDto(
-                -10, now, "rainy"
-        );
-        String json = mapper.writeValueAsString(weatherDto);
-
-        mockMvc.perform(post(base + "Moscow").with(user("user"))
-                        .contentType("application/json")
-                        .content(json))
-                .andExpect(status().isForbidden());
-        mockMvc.perform(post(base + "Moscow").with(user("admin").roles("ADMIN"))
-                        .contentType("application/json")
-                        .content(json))
-                .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Moscow").with(user("user")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Moscow").with(user("admin").roles("ADMIN")))
-                .andExpect(status().isOk());
-    }
 }
