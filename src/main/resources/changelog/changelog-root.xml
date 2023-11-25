@@ -5,7 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <preConditions>
-        <runningAs  username="server"/>
+        <or>
+            <runningAs username="server"/>
+            <runningAs username="SA"/>
+        </or>
     </preConditions>
 
     <include file="v-0.0/changelog-v.0.0-cumulative.xml" relativeToChangelogFile="true"/>

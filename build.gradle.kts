@@ -37,6 +37,10 @@ dependencies {
     implementation("org.liquibase:liquibase-core:4.24.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:jdbc:1.19.0")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {

@@ -1,7 +1,6 @@
 package pan.artem.tinkoff.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
@@ -12,7 +11,6 @@ import java.time.ZoneOffset;
 
 @AllArgsConstructor
 @Service
-@Primary
 public class WeatherServiceJdbc implements WeatherCrudService {
 
     private final WeatherRepositoryJdbc weatherRepository;
