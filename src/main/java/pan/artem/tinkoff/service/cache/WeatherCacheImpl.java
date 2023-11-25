@@ -23,6 +23,10 @@ public class WeatherCacheImpl implements WeatherCache {
 
     @Override
     public synchronized void save(String city, WeatherFullDto weatherDto) {
+        var prevNode = cache.get(city);
+        if (prevNode != null) {
+            prevNode.remove();
+        }
         var node = queue.add(weatherDto);
         cache.put(city, node);
         if (queue.size() > sizeLimit) {
