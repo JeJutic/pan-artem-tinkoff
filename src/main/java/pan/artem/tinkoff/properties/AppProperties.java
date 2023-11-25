@@ -1,5 +1,6 @@
 package pan.artem.tinkoff.properties;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,12 +32,28 @@ public class AppProperties {
 
     @Getter
     @Setter
+    @Validated
     @ConfigurationProperties(prefix = "app.cache.course")
     public static class CacheProperties {
 
         @NotNull
-        @Size
+        @Min(0)
         private Integer size;
+    }
+
+    @Getter
+    @Setter
+    @Validated
+    @ConfigurationProperties(prefix = "app.moving-average")
+    public static class MovingAverageProperties {
+
+        @NotNull
+        @Size(min = 1, max = 5)
+        private List<String> cities;
+
+        @NotNull
+        @Size(min = 8)
+        private String cronPassword;
     }
 
 }

@@ -11,8 +11,15 @@
         </or>
     </preConditions>
 
-    <include file="v-0.0/changelog-v.0.0-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.1/changelog-v.0.1-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.2/changelog-v.0.2-cumulative.xml" relativeToChangelogFile="true"/>
+    <changeSet id="moving_average-table" author="panart">
+        <createTable tableName="moving_average">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="temperature" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

@@ -8,6 +8,7 @@ import pan.artem.tinkoff.dto.WeatherFullDto;
 import pan.artem.tinkoff.dto.externalservice.CurrentWeatherDto;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
 import pan.artem.tinkoff.service.cache.WeatherCache;
+import pan.artem.tinkoff.service.client.CurrentWeatherClient;
 
 import java.time.*;
 import java.util.Optional;

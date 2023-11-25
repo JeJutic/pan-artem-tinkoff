@@ -11,8 +11,13 @@
         </or>
     </preConditions>
 
-    <include file="v-0.0/changelog-v.0.0-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.1/changelog-v.0.1-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.2/changelog-v.0.2-cumulative.xml" relativeToChangelogFile="true"/>
+    <changeSet  id="cron-user"  author="panart">
+        <insert tableName="user_table">
+            <column name="name" value="cron"/>
+            <column name="password"
+                    value="$2a$12$D21jvPLlc6ZD2y.0pR.BtePUlC0n9en14RP1HmOclsNJBaOLKmQsO"/>
+            <column name="role_id" value="1"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>
