@@ -1,5 +1,6 @@
 package pan.artem.tinkoff.service;
 
+import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -13,19 +14,23 @@ import pan.artem.tinkoff.exception.ResourceNotFoundException;
 import pan.artem.tinkoff.repository.jpa.CityRepositoryJPA;
 import pan.artem.tinkoff.repository.jpa.WeatherRepositoryJPA;
 import pan.artem.tinkoff.repository.jpa.WeatherTypeRepositoryJPA;
+import pan.artem.tinkoff.service.cache.WeatherCache;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Optional;
 
-@Repository
 @AllArgsConstructor
+@Repository
 @Primary
 public class WeatherServiceJPA implements WeatherCrudService {
 
     private final WeatherRepositoryJPA weatherRepositoryJPA;
     private final WeatherTypeRepositoryJPA weatherTypeRepositoryJPA;
     private final CityRepositoryJPA cityRepositoryJPA;
+    @Resource(name = "weatherCache")
+    private final WeatherCache weatherCache;
+
 
     private City getCity(String city) {
         var cityEntity = cityRepositoryJPA.getByNameWithWeatherFetching(city);
@@ -54,6 +59,11 @@ public class WeatherServiceJPA implements WeatherCrudService {
 
     @Override
     public WeatherFullDto getWeather(String city) {
+        Optional<WeatherFullDto> cached = weatherCache.get(city);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+
         LocalDate today = LocalDate.now(ZoneOffset.UTC);
         var optional = getWeather(city, today);
         if (optional.isEmpty()) {
@@ -62,11 +72,14 @@ public class WeatherServiceJPA implements WeatherCrudService {
             );
         }
         Weather weather = optional.get();
-        return new WeatherFullDto(
+
+        var weatherDto = new WeatherFullDto(
                 weather.getTemperature(),
                 weather.getDateTime(),
                 weather.getWeatherType().getDescription()
         );
+        weatherCache.save(city, weatherDto);
+        return weatherDto;
     }
 
     private void addWeather(City city, WeatherFullDto weatherDto, WeatherType weatherType) {
@@ -81,6 +94,7 @@ public class WeatherServiceJPA implements WeatherCrudService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public void addWeather(String city, WeatherFullDto weatherDto) {
+        weatherCache.invalidate(city);
         var cityEntity = getCity(city);
         var weatherType = getWeatherType(weatherDto.weatherType());
         addWeather(cityEntity, weatherDto, weatherType);
@@ -89,6 +103,7 @@ public class WeatherServiceJPA implements WeatherCrudService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public boolean updateWeather(String city, WeatherFullDto weatherDto) {
+        weatherCache.invalidate(city);
         var cityEntity = getCity(city);
         var weatherType = getWeatherType(weatherDto.weatherType());
         for (var weather : cityEntity.getWeathers()) {
@@ -107,6 +122,7 @@ public class WeatherServiceJPA implements WeatherCrudService {
 
     @Override
     public void deleteWeathers(String city) {
+        weatherCache.invalidate(city);
         try {
             var cityEntity = getCity(city);
             cityEntity.getWeathers().clear();

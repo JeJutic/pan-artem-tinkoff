@@ -1,6 +1,8 @@
 package pan.artem.tinkoff.properties;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,6 +24,16 @@ public class AppProperties {
 
         @NotEmpty
         private String apiToken;
+    }
+
+    @Getter
+    @Setter
+    @ConfigurationProperties(prefix = "app.cache.course")
+    public static class CacheProperties {
+
+        @NotNull
+        @Size
+        private Integer size;
     }
 
 }

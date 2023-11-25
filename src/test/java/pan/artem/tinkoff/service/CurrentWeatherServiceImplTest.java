@@ -9,6 +9,7 @@ import pan.artem.tinkoff.dto.externalservice.ConditionDto;
 import pan.artem.tinkoff.dto.externalservice.CurrentDto;
 import pan.artem.tinkoff.dto.externalservice.CurrentWeatherDto;
 import pan.artem.tinkoff.properties.AppProperties;
+import pan.artem.tinkoff.service.cache.WeatherCache;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -38,7 +39,8 @@ class CurrentWeatherServiceImplTest {
         );
         CurrentWeatherServiceImpl weatherService = new CurrentWeatherServiceImpl(
                 weatherClient,
-                null
+                null,
+                Mockito.mock(WeatherCache.class)
         );
         weatherService = Mockito.spy(weatherService);
 

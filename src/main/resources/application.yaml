@@ -2,6 +2,9 @@ app:
   current-weather-service:
     api-token:
     base-url: https://api.weatherapi.com/v1
+  cache:
+    course:
+      size: 2
 
 spring:
   liquibase:
