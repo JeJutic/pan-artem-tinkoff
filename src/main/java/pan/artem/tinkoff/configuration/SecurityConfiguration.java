@@ -14,20 +14,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import pan.artem.tinkoff.service.UserDetailsServiceImpl;
 
-import javax.sql.DataSource;
-
 @Configuration
 public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder configureGlobal(
             AuthenticationManagerBuilder auth,
-            DataSource dataSource,
             UserDetailsServiceImpl userDetailsService
     ) throws Exception {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         auth.userDetailsService(userDetailsService).passwordEncoder(encoder);
-        auth.jdbcAuthentication().dataSource(dataSource);
         return encoder;
     }
 

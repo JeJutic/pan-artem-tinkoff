@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.service;
+package pan.artem.tinkoff.service.client;
 
 import io.github.resilience4j.core.exception.AcquirePermissionCancelledException;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;

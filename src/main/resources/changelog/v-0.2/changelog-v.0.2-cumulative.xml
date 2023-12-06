@@ -11,8 +11,7 @@
         </or>
     </preConditions>
 
-    <include file="v-0.0/changelog-v.0.0-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.1/changelog-v.0.1-cumulative.xml" relativeToChangelogFile="true"/>
-    <include file="v-0.2/changelog-v.0.2-cumulative.xml" relativeToChangelogFile="true"/>
+    <include file="2023-11-25--01-moving-average-schema-import.xml" relativeToChangelogFile="true"/>
+    <include file="2023-11-25--02-add-cron-user.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
