@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pan.artem.tinkoff.entity.MovingAverageRecord;
 import pan.artem.tinkoff.repository.MovingAverage;
+import pan.artem.tinkoff.repository.jpa.CityRepositoryJPA;
 import pan.artem.tinkoff.service.movingaverage.event.MovingAverageEvent;
 
 @AllArgsConstructor
@@ -16,14 +17,23 @@ public class MovingAverageConsumer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final MovingAverage movingAverage;
+    private final CityRepositoryJPA cityRepository;
 
     @Transactional
     @KafkaListener(topics = "moving_average")
     public void consume(MovingAverageEvent event) {
         logger.debug("Moving average event received: {}", event);
 
+        String city = event.getCity();
+        var cityEntity = cityRepository.getByName(event.getCity());
+        if (cityEntity == null) {
+            logger.warn("Couldn't find city {} from event", city);
+            return;
+        }
+
         var newRecord = new MovingAverageRecord();
         newRecord.setTemperature(event.getTemperature());
+        newRecord.setCity(cityEntity);
         movingAverage.save(newRecord);
 
         long count = movingAverage.count();
@@ -33,8 +43,12 @@ public class MovingAverageConsumer {
             movingAverage.deleteLatest();
         }
         double average = movingAverage.findAll().stream()
+                .filter(record -> record.getCity().getId().equals(cityEntity.getId()))
                 .mapToInt(MovingAverageRecord::getTemperature)
                 .average().getAsDouble();
-        logger.info("New moving average of last 30 records found: {}", average);
+        logger.info("New moving average of last 30 records for city {} is {}",
+                event.getCity(),
+                average
+        );
     }
 }

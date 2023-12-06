@@ -47,6 +47,9 @@ public class AppProperties {
     @ConfigurationProperties(prefix = "app.moving-average")
     public static class MovingAverageProperties {
 
+        @NotEmpty
+        private String topicName;
+
         @NotNull
         @Size(min = 1, max = 5)
         private List<String> cities;

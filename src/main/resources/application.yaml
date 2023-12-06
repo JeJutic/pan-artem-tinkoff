@@ -9,10 +9,9 @@ app:
     cities:
       - Moscow
       - Saint-Petersburg
-      - Samara
       - Yekaterinburg
-      - Omsk
     cron-password: cucumber
+    topic-name: moving_average
 
 spring:
   liquibase:

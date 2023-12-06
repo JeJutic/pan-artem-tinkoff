@@ -17,4 +17,8 @@ public class MovingAverageRecord {
     private Long id;
 
     private int temperature;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 }

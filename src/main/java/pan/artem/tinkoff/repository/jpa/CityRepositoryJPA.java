@@ -12,4 +12,6 @@ public interface CityRepositoryJPA extends JpaRepository<City, Long> {
     @Query("SELECT c FROM City c LEFT JOIN FETCH c.weathers WHERE c.name = :cityName")
     City getByNameWithWeatherFetching(@Param("cityName") String name);
 
+    City getByName(String name);
+
 }

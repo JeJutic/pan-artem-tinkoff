@@ -19,6 +19,9 @@
             <column name="temperature" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="city_id" type="int">
+                <constraints foreignKeyName="fk_city_moving" references="city(id)"/>
+            </column>
         </createTable>
     </changeSet>
 

@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pan.artem.tinkoff.properties.AppProperties;
-import pan.artem.tinkoff.service.client.SelfClient;
+import pan.artem.tinkoff.service.client.CurrentWeatherClient;
 import pan.artem.tinkoff.service.movingaverage.event.MovingAverageEvent;
 
 @RequiredArgsConstructor
@@ -16,21 +16,22 @@ public class MovingAverageProducer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final SelfClient selfClient;
-    private final AppProperties.MovingAverageProperties movingAverageProperties;
+    private final CurrentWeatherClient currentWeatherClient;
+    private final AppProperties.MovingAverageProperties properties;
     private final KafkaTemplate<String, MovingAverageEvent> kafkaTemplate;
 
     private int offset = 0;
 
     @Scheduled(cron = "*/5 * * * * *")
     public synchronized void run() {
-        int index = offset % movingAverageProperties.getCities().size();
-        String city = movingAverageProperties.getCities().get(index);
+        int index = offset % properties.getCities().size();
+        String city = properties.getCities().get(index);
 
-        int temperature = selfClient.getTemperature(city);
+        int temperature = currentWeatherClient.getCurrentWeather(city)
+                .current().temperature();
         kafkaTemplate.send(
-                "moving_average",
-                new MovingAverageEvent(temperature)
+                properties.getTopicName(),
+                new MovingAverageEvent(city, temperature)
         );
 
         logger.debug("Scheduled task executed");
