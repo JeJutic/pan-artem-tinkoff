@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <preConditions>
+        <or>
+            <runningAs username="server"/>
+            <runningAs username="SA"/>
+        </or>
+    </preConditions>
+
+    <changeSet id="moving_average-table" author="panart">
+        <createTable tableName="moving_average">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="temperature" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city_id" type="int">
+                <constraints foreignKeyName="fk_city_moving" references="city(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

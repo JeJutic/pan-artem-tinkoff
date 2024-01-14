@@ -2,6 +2,16 @@ app:
   current-weather-service:
     api-token:
     base-url: https://api.weatherapi.com/v1
+  cache:
+    course:
+      size: 2
+  moving-average:
+    cities:
+      - Moscow
+      - Saint-Petersburg
+      - Yekaterinburg
+    cron-password: cucumber
+    topic-name: moving_average
 
 spring:
   liquibase:
@@ -17,6 +27,20 @@ spring:
   h2:
     console:
       enabled: true
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      bootstrap-servers: localhost:29092
+      group-id: 1
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: pan.artem.tinkoff.service.movingaverage.event
+    producer:
+      acks: -1
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 resilience4j.ratelimiter:
   instances:
