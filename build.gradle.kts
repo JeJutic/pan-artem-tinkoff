@@ -36,8 +36,13 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-core:6.3.1.Final")
     implementation("org.liquibase:liquibase-core:4.24.0")
 
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    implementation("org.springframework.kafka:spring-kafka")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:jdbc:1.19.0")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")

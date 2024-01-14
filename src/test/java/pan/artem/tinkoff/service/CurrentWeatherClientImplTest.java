@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import org.springframework.web.client.RestTemplate;
 import pan.artem.tinkoff.dto.externalservice.CurrentWeatherDto;
 import pan.artem.tinkoff.properties.AppProperties;
+import pan.artem.tinkoff.service.client.CurrentWeatherClientImpl;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

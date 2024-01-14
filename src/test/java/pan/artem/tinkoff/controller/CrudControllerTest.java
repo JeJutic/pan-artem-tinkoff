@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,12 +26,9 @@ import pan.artem.tinkoff.service.WeatherCrudService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -86,6 +84,7 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void getWeather() throws Exception {
         weatherService.addWeather("Moscow", new WeatherFullDto(
                 -10, now, "rainy"
@@ -100,6 +99,23 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void getWeatherUser() throws Exception {
+        getWeather();
+    }
+
+    @Test
+    void getWeatherUnauthorized() throws Exception {
+        weatherService.addWeather("Moscow", new WeatherFullDto(
+                -10, now, "rainy"
+        ));
+
+        mockMvc.perform(get(base + "Moscow"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void postWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, now, "rainy"
@@ -114,6 +130,36 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void postWeatherUser() throws Exception {
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -10, now, "rainy"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(post(base + "Moscow")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isForbidden());
+        Assertions.assertFalse(isPresent("Moscow", weatherDto));
+    }
+
+    @Test
+    void postWeatherUnauthorized() throws Exception {
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -10, now, "rainy"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(post(base + "Moscow")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isUnauthorized());
+        Assertions.assertFalse(isPresent("Moscow", weatherDto));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void putWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -11, now, "light rain"
@@ -139,6 +185,36 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void putWeatherUser() throws Exception {
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -11, now, "light rain"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(put(base + "Saint-Petersburg")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isForbidden());
+        Assertions.assertFalse(isPresent("Saint-Petersburg", weatherDto));
+    }
+
+    @Test
+    void putWeatherUnauthorized() throws Exception {
+        WeatherFullDto weatherDto = new WeatherFullDto(
+                -11, now, "light rain"
+        );
+        String json = mapper.writeValueAsString(weatherDto);
+
+        mockMvc.perform(put(base + "Saint-Petersburg")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isUnauthorized());
+        Assertions.assertFalse(isPresent("Saint-Petersburg", weatherDto));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void deleteWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, now, "rainy"
@@ -157,22 +233,37 @@ class CrudControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void deleteWeatherUser() throws Exception {
+        mockMvc.perform(delete(base + "Saint-Petersburg"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteWeatherUnauthorized() throws Exception {
+        mockMvc.perform(delete(base + "Saint-Petersburg"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void yesterdayWeather() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, now.minusDays(1), "rainy"
         );
         String json = mapper.writeValueAsString(weatherDto);
 
-        mockMvc.perform(post(base + "Moscow")
+        mockMvc.perform(post(base + "Yekaterinburg")
                         .contentType("application/json")
                         .content(json))
                 .andExpect(status().isOk());
-        mockMvc.perform(get(base + "Moscow"))
+        mockMvc.perform(get(base + "Yekaterinburg"))
                 .andExpect(status().isNotFound());
-        Assertions.assertTrue(isPresent("Moscow", weatherDto));
+        Assertions.assertTrue(isPresent("Yekaterinburg", weatherDto));
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void unknownCity() throws Exception {
         WeatherFullDto weatherDto = new WeatherFullDto(
                 -10, LocalDateTime.now().minusDays(1), "rainy"

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <preConditions>
+        <or>
+            <runningAs username="server"/>
+            <runningAs username="SA"/>
+        </or>
+    </preConditions>
+
+    <changeSet id="role-table" author="panart">
+        <createTable tableName="role">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="user-table" author="panart">
+        <createTable tableName="user_table">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="int">
+                <constraints foreignKeyName="fk_role" references="role(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet  id="role-values"  author="panart">
+        <insert tableName="role">
+            <column name="name" value="USER"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="ADMIN"/>
+        </insert>
+    </changeSet>
+
+    <changeSet  id="admin-user"  author="panart">
+        <insert tableName="user_table">
+            <column name="name" value="admin"/>
+            <column name="password"
+                    value="$2a$12$SN87677MCedt0CmTfH9EIeYkMXyIMIq/boDvLPzqOAw2Cd0pcxNpC"/>
+            <column name="role_id" value="2"/>
+<!--            maybe not the best idea to set to constant dependent on order of insertions -->
+<!--            but in the worst scenario, admin won't be admin-->
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

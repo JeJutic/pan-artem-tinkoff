@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,7 @@ import pan.artem.tinkoff.dto.ErrorInfo;
 import pan.artem.tinkoff.exception.MyAppException;
 import pan.artem.tinkoff.exception.RequestNotPermitted;
 import pan.artem.tinkoff.exception.ResourceNotFoundException;
+import pan.artem.tinkoff.exception.UserAlreadyExistsException;
 import pan.artem.tinkoff.exception.externalservice.ExternalServiceInternalErrorException;
 import pan.artem.tinkoff.exception.externalservice.ExternalServiceLimitExceededException;
 
@@ -96,6 +98,32 @@ public class GlobalExceptionHandler {
                 new ErrorInfo(
                         request.getRequestURL().toString(),
                         "Service is temporarily unavailable"
+                )
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorInfo> handleAuthentication(
+            HttpServletRequest request,
+            AuthenticationException e
+    ) {
+        logger.warn("User's authentication failed (request: {})", request, e);
+
+        return ResponseEntity.status(401).body(
+                new ErrorInfo(request.getRequestURL().toString(),
+                        "Probably username or password is incorrect"
+                )
+        );
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorInfo> handleUserAlreadyExists(
+            HttpServletRequest request,
+            AuthenticationException e
+    ) {
+        return ResponseEntity.status(401).body(
+                new ErrorInfo(request.getRequestURL().toString(),
+                        e.getMessage()
                 )
         );
     }
