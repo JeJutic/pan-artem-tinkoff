@@ -10,6 +10,8 @@ import pan.artem.tinkoff.dto.externalservice.CurrentDto;
 import pan.artem.tinkoff.dto.externalservice.CurrentWeatherDto;
 import pan.artem.tinkoff.properties.AppProperties;
 import pan.artem.tinkoff.service.cache.WeatherCache;
+import pan.artem.tinkoff.service.client.CurrentWeatherClient;
+import pan.artem.tinkoff.service.client.CurrentWeatherClientImpl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;

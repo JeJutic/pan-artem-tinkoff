@@ -1,4 +1,4 @@
-package pan.artem.tinkoff.service;
+package pan.artem.tinkoff.service.client;
 
 import pan.artem.tinkoff.dto.externalservice.CurrentWeatherDto;
 
